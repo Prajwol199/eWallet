@@ -8,7 +8,17 @@ function $user(){
 		},
 
 		register: function( payload ){
-			
+			return $http().post({
+				url: Routes().register,
+				payload: payload,
+			});
+		},
+
+		forgot: function( payload ){
+			return $http().post({
+				url: Routes().forgot,
+				payload: payload,
+			});
 		}
 	}
 }

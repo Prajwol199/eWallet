@@ -9,23 +9,9 @@ require_once __dir__.'/../static/phpmailer/src/SMTP.php';
 require_once('Database.php');
  class Mailer extends Database{
 
- 	protected $table_user='user';
+ 	protected $table_user = 'user';
 
- 	public function sendmail(){
- 		$data = json_decode(file_get_contents('php://input'), true);
-		$email = $data['email'];
-		if(!empty($email)){
-			$check_email = $this->select($this->table_user,['email'],['email'=>$email]);
-			if(mysqli_num_rows($check_email)==1){
-				$token = $this->randomString();
-				$this->randPassword($token,$email);
-			}else{
-				$this->response(400);
-			}
-		}
- 	}
-
- 	public function randPassword($token,$email){
+	public function send_mail($token,$email){
     	$mail = new PHPMailer;
 		try {
 		    //Server settings
@@ -52,53 +38,10 @@ require_once('Database.php');
 		    $mail->Body    = 'Enter the token <b>'. $token.'</b> on web browser and change your password';
 		    if($mail->send()) {
 		    	$update = $this->update($this->table_user,['token'=>$token],['email'=>$email]);
-		    	$data = array(
-		    		'email'=>$email,
-		    		'token'=>$token,
-		    		'message'=>'Token send successfully'
-		    	);
-		    	$this->response(200,$data);
+		    	return $update;
 			}
 		} catch (Exception $e) {
 		    echo 'Message could not be sent. Mailer Error: ', $mail->ErrorInfo;
 		}	
     }
-
-
- 	public function randomString($length = 6) {
-		$str = "";
-		$characters = array_merge(range('A','Z'), range('a','z'), range('0','9'));
-		$max = count($characters) - 1;
-		for ($i = 0; $i < $length; $i++) {
-			$rand = mt_rand(0, $max);
-			$str .= $characters[$rand];
-		}
-		return $str;
-	}
-
-	public function response($status,$data=''){
-		if($status == 400){
-			$response = [
-				'status'=>'400',
-				'message'=>'Error'
-			];
-			$json_response = json_encode($response);
-			echo $json_response;
-		}elseif($status == 200 ){
-			$response = [
-				'status'=>'200',
-				'message'=>'successful',
-				'data'=>$data
-			];
-			$json_response = json_encode($response);
-			echo $json_response;
-		}else{
-			$response = [
-				'message'=>'Response error'
-			];
-		}
-	}
  }
-
- $mail = new Mailer();
- $mail->sendmail();

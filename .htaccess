@@ -1,0 +1,5 @@
+RewriteEngine On
+
+RewriteBase /eWallet/
+
+RewriteRule server/(.*) server/User.php?url=$1 [L,QSA]

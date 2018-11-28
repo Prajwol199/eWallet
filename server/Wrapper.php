@@ -1,36 +1,39 @@
 <?php
 
-abstract class Wrapper{
-	protected $method;
-
-	// abstract public function get($method);
-	abstract public function register($method);
-	abstract public function login();
-	abstract public function recover();
-	// abstract public function put($method);
-	// abstract public function delete($method);
-
-
-	public function response($status,$data=''){
-		if($status == 400){
-			$response = [
-				'status'=>'400',
-				'message'=>'Error'
-			];
-			$json_response = json_encode($response);
-			echo $json_response;
-		}elseif($status == 200 ){
-			$response = [
-				'status'=>'200',
-				'message'=>'successful',
-				'data'=>$data
-			];
-			$json_response = json_encode($response);
-			echo $json_response;
+class Wrapper{
+	protected $routes;
+	public function __construct(){
+		$key = array_search( $_GET['url'], array_column($this->routes, 'url'));
+		if( $key !== false && isset($this->routes[$key] )){
+			$route = $this->routes[ $key ];
+			if( strtolower( $_SERVER['REQUEST_METHOD'] ) == strtolower( $route['method'] ) ){
+					call_user_func( $route['callback'] );
+			}else{
+				$this->invalid_route();
+			}
 		}else{
-			$response = [
-				'message'=>'Response error'
-			];
+			$this->invalid_route();
 		}
+	}
+
+	public function register_route( $url, $payload ){
+		$this->routes[] = array(
+			'url'      => $url,
+			'method'   => $payload[ 'method' ],
+			'callback' => $payload[ 'callback' ]
+		);
+	}
+
+	public function invalid_route(){
+		$this->response( 404, array(
+			'message' => 'Invalid Route',
+		));
+	}
+
+	public function response( $status = 200, $data ){
+		header('Content-Type: application/json');
+		http_response_code( $status );
+		echo json_encode($data);
+		die;
 	}
 }

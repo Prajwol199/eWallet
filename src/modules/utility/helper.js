@@ -4,7 +4,7 @@ function Helper(){
 			$( '#render' ).html( data );
 		},
 		log: function( data ){
-			if( 'production' == config().mode ){
+			if( 'production' == Config().mode ){
 				console.log( data );
 			}
 		},
