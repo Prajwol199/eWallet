@@ -26,6 +26,21 @@ class User extends Wrapper{
             'callback' => array( $this, 'forgot' )
         ));
 
+        $this->register_route( 'recover', array(
+            'method'   => 'post',
+            'callback' => array( $this, 'recover' )
+        ));
+
+        $this->register_route( 'resendToken', array(
+            'method'   => 'post',
+            'callback' => array( $this, 'forgot' )
+        ));
+
+        $this->register_route( 'addCategory', array(
+            'method'   => 'post',
+            'callback' => array( $this, 'addCategory' )
+        ));
+
         parent::__construct();
     }
 
@@ -87,6 +102,11 @@ class User extends Wrapper{
             ];
             $count = $this->db->select($this->table_user,array('*'),$condition);
             if((mysqli_num_rows($count))==1){
+                    $id_db = $this->db->select($this->table_user,['id'],$condition);
+                    $fetch_id = $this->fetch($id_db);
+                    foreach ($fetch_id as $key => $value) {
+                        $user_id = $value['id'];
+                    }
                     $header = json_encode(['alg'=>'HS256','typ'=>'JWT']);
                     $payload = json_encode(['email'=>$email,'password'=>$password]);
                     $signature =hash_hmac('sha256',base64_encode($header).'.'.base64_encode($payload), 'abc123',true);
@@ -95,6 +115,7 @@ class User extends Wrapper{
                 $message = [
                     'email'=>$email,
                     'message'=>'Succefully login',
+                    'user_id'=>$user_id,
                     'token'=>$token
                 ];
                 $this->response(200,$message);
@@ -143,6 +164,35 @@ class User extends Wrapper{
                 'message'=>'Some field are empty',
             ));
         }
+    }
+
+    public function recover(){
+        $data = json_decode(file_get_contents('php://input'), true);
+        $password = md5($data['password']);
+        $token = $data['token'];
+        $email = $data['email'];
+
+        $token_db = $this->db->select($this->table_user,['token'],['token'=>$token]);
+        $fetch_token = $this->fetch($token_db);
+        if(count($fetch_token) == 1 ){
+            if($update_password = $this->db->update($this->table_user,['password'=>$password],['email'=>$email])){
+               $this->response(200,array(
+                    'email'=>$email,
+                    'message'=>'Password update successfully',
+                )); 
+            }else{
+                 $this->response(200,array(
+                    'message'=>'Error! Update unsuccessful',
+                ));
+            }
+        }else{
+            echo "Not found";
+        }
+    }
+
+    public function addCategory(){
+        $data = json_decode(file_get_contents('php://input'), true);
+        
     }
 
     public function fetch($data){

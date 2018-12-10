@@ -2,4 +2,8 @@ RewriteEngine On
 
 RewriteBase /eWallet/
 
-RewriteRule server/(.*) server/User.php?url=$1 [L,QSA]
+RewriteRule server/user/(.*) server/User.php?url=$1 [L,QSA]
+
+RewriteRule server/category/(.*)/(.*) server/Category.php?url=$1&id=$2 [L,QSA]
+
+RewriteRule server/data/(.*)/(.*) server/Data.php?url=$1&id=$2 [L,QSA]

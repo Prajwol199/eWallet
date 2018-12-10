@@ -16,13 +16,13 @@ module.exports = function(grunt) {
 
     concat: {
     	options:{
-    		separator:"\n \n /*** New File ***/\n"
+    		separator:"\n"
     	},
     	js: {
     		src: [
     			'./src/js/wrapper/start.js',
-    			'./src/modules/**/*.js',
     			'./src/utility/*.js',
+                './src/modules/**/*.js',
     			'./src/js/wrapper/end.js'
     		],
     		dest: './build/app.js'

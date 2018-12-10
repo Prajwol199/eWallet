@@ -36,4 +36,12 @@ class Wrapper{
 		echo json_encode($data);
 		die;
 	}
+
+	public function fetch($data){
+        $rows=[];
+        while($row=mysqli_fetch_assoc($data)){
+            $rows[]=$row;
+        }
+        return $rows;
+    }
 }

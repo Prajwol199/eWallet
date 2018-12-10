@@ -99,4 +99,13 @@ class Database{
         }
         return false;
     }
+
+    public function innerjoin($id){
+        $sql = "DELETE categories,data
+        FROM categories
+        INNER JOIN data ON data.category_id = categories.id
+        WHERE categories.id=$id";
+        $result= mysqli_query($this->connection(),$sql);
+        return $result;
+    }
 }

@@ -1,7 +1,9 @@
 function Helper(){
 	return{
 		render: function( data ){
-			$( '#render' ).html( data );
+			var template = Handlebars.compile(data);
+			var html = template(template);
+			$("#render").html(html);
 		},
 		log: function( data ){
 			if( 'production' == Config().mode ){
@@ -13,6 +15,6 @@ function Helper(){
 		},
 		getCookie: function(){
 			return localStorage.getItem( Config().cookieVar );
-		}
+		},
 	}
 }
