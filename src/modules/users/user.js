@@ -21,32 +21,23 @@ function user(){
 			Helper().render( template );
 		},
 		renderDashboard:function(){
-			var template = $('#dashboardView').html();
+			var template   = $('#dashboardView').html();
 			var data_token = JSON.parse(Helper().getCookie());
-			var token = data_token.token;
-			var id = data_token.user_id;
+			var token      = data_token.token;
+			var id         = data_token.user_id;
 			if(token == null){
 				Finch.navigate('login');
 			}else{
 				$( "#hide" ).hide();
 				$(".addCategoryView").hide();
+				$(".small_content").hide();
+				$(".categoryView").hide();	
+				$(".editView").hide();
+				$(".editDataView").hide();						
 				var url = Config().apiUrl+Routes().category+Routes().user+id;
 				var idRender = 'dashboardView';
 				var navigate = 'dashboard';
 				$http().get( url , idRender ,navigate );
-				 // $.ajax({
-				 //    type: 'get',
-				 //    url: 'http://localhost/eWallet/server/category/user/'+id,
-				 //    success: function(response) {
-				 //    	var html = $("#dashboardView").html();
-					// 	var template = Handlebars.compile(html);
-
-					// 	$('body').append(template({item: response}));
-				 //    },
-				 //    error: function(response){
-				 //        alert('Error!');
-				 //    }
-			  // 	});
 			}
 		},
 	}
@@ -86,14 +77,17 @@ $( document ).on( 'submit', '#login-form', function(e){
 $( document ).on( 'submit', '#register-form', function(e){
 	e.preventDefault();
 	var data = {};
-	data['name']    = document.forms["register-form"]["name"].value;
+	data['name']     = document.forms["register-form"]["name"].value;
 	data['email']    = document.forms["register-form"]["email"].value;
 	data['password'] = document.forms["register-form"]["password"].value;
 	var json = JSON.stringify(data);
 
 	var onRegister = function( response ){
+		Helper().log( response );
 		var access_token = response.token;
-    	Helper().setCookie('access_token='+access_token);
+		var user_id      = response.user_id;
+    	var data         = JSON.stringify({"token":access_token,"user_id":user_id});
+    	Helper().setCookie(data);
 		Finch.navigate('dashboard');
 	}	
 
@@ -128,8 +122,8 @@ $( document ).on( 'submit', '#forgot-form', function(e){
 $( document ).on( 'submit', '#recover-form', function(e){
 	e.preventDefault();
 	var data = {};
-	data['email'] = Helper().getCookie();
-	data['token'] = document.forms["recover-form"]["token"].value;
+	data['email']    = Helper().getCookie();
+	data['token']    = document.forms["recover-form"]["token"].value;
 	data['password'] = document.forms["recover-form"]["password"].value;
 	var json = JSON.stringify(data);
 

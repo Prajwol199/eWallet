@@ -16,19 +16,21 @@ function dashboard(){
 				Finch.navigate('login');
 			}else{
 				$( "#hide" ).hide();
-				var url = Config().apiUrl+Routes().category+Routes().categoryEdit+category_id;
+				var url      = Config().apiUrl+Routes().category+Routes().categoryEdit+category_id;
 				var idRender = 'editView';
 				var navigate = 'edit';
 				$http().get( url , idRender ,navigate );
 			}
 		},
 		rendercategoryData:function(){
-			var cookie = JSON.parse(Helper().getCookie());
+			var cookie      = JSON.parse(Helper().getCookie());
 			var category_id = cookie.categoryData_id;
 			if(category_id == null){
 				Finch.navigate('dashboard');
 			}else{
 				$( "#hide" ).hide();
+				$( ".editDataView" ).hide();
+				$( ".editCategoryDiv" ).hide();				
 				var url = Config().apiUrl+Routes().datas+Routes().show+category_id;
 				var idRender = 'categoryView';
 				var navigate = 'categoryData';
@@ -56,8 +58,8 @@ $( document ).on( 'submit', '#addCategory-form', function(e){
 	e.preventDefault();
 	var data = Helper().getCookie();
 	data = JSON.parse(data);
-	var data_category = {};
-	data_category['title'] = document.forms["addform"]["title"].value;
+	var data_category        = {};
+	data_category['title']   = document.forms["addform"]["title"].value;
 	data_category['user_id'] = data.user_id;
 	var json = JSON.stringify(data_category);
 
@@ -93,11 +95,11 @@ $( document ).on( 'submit', '#editCategory-form', function(e){
 //<-------------------- Add Data form-------------------->
 $( document ).on( 'submit', '#addData', function(e){
 	e.preventDefault();
-	var category_id = Helper().getCookie();
-	var data_id = JSON.parse(category_id);
-	var id = data_id.categoryData_id;
-	var data = {};
-	data['field_name'] = $("#fieldName").val();
+	var category_id     = Helper().getCookie();
+	var data_id         = JSON.parse(category_id);
+	var id              = data_id.categoryData_id;
+	var data            = {};
+	data['field_name']  = $("#fieldName").val();
 	data['description'] = $("#description").val();
 	var json = JSON.stringify(data);
 
@@ -122,11 +124,10 @@ $(document).on('click','.deleteData',function(e){
 //<---------------- Edit Data ---------------->
 $( document ).on( 'submit', '#editData', function(e){
 	e.preventDefault();
-	var cookie = JSON.parse(Helper().getCookie());
-	var id = cookie.editData_id;
-	var data = {};
-
-	data['field_name'] = $("[name=fieldName]").val();
+	var cookie          = JSON.parse(Helper().getCookie());
+	var id              = cookie.editData_id;
+	var data            = {};
+	data['field_name']  = $("[name=fieldName]").val();
 	data['description'] = $("[name=description]").val();
 
 	$dashboard().editData( id,data );
@@ -135,48 +136,48 @@ $( document ).on( 'submit', '#editData', function(e){
 $(document).on('click','#dashboard',function(e){
 	e.preventDefault();
 	Finch.navigate('dashboard');
-	location.reload();
+	// location.reload();
 });
 function $dashboard(){
 	return {
 		addCategory: function( payload ){
 			return $http().post({
-				url: Routes().category+Routes().addCategory,
-				payload: payload,
+				url     : Routes().category+Routes().addCategory,
+				payload : payload,
 			});
 		},
 		deleteCategory: function( payload ){
 			return $http().delete({
-				url: Routes().category+Routes().deleteCategory,
-				payload: payload,
+				url     : Routes().category+Routes().deleteCategory,
+				payload : payload,
 			});
 		},
 		editCategory: function( id,title ){
 			return $http().put({
-				url: Routes().category+Routes().editCategory,
-				id: id,
-				title: title,
-				navigate: 'dashboard',
+				url      : Routes().category+Routes().editCategory,
+				id       : id,
+				title    : title,
+				navigate : 'dashboard',
 			});
 		},
 		addData: function( payload , id ){
 			return $http().post({
-				url: Routes().datas+Routes().addData+'/'+id,
-				payload: payload,
+				url     : Routes().datas+Routes().addData+'/'+id,
+				payload : payload,
 			});
 		},
 		deleteData: function( payload ){
 			return $http().delete({
-				url: Routes().datas+Routes().deleteData,
-				payload: payload,
+				url     : Routes().datas+Routes().deleteData,
+				payload : payload,
 			});
 		},
 		editData: function( id, title ){
 			return $http().put({
-				url: Routes().datas+Routes().edit+'/',
-				id: id,
-				title: title,
-				navigate: 'categoryData',
+				url      : Routes().datas+Routes().edit+'/',
+				id       : id,
+				title    : title,
+				navigate : 'categoryData',
 			});
 		},
 	}
@@ -204,32 +205,23 @@ function user(){
 			Helper().render( template );
 		},
 		renderDashboard:function(){
-			var template = $('#dashboardView').html();
+			var template   = $('#dashboardView').html();
 			var data_token = JSON.parse(Helper().getCookie());
-			var token = data_token.token;
-			var id = data_token.user_id;
+			var token      = data_token.token;
+			var id         = data_token.user_id;
 			if(token == null){
 				Finch.navigate('login');
 			}else{
 				$( "#hide" ).hide();
 				$(".addCategoryView").hide();
+				$(".small_content").hide();
+				$(".categoryView").hide();	
+				$(".editView").hide();
+				$(".editDataView").hide();						
 				var url = Config().apiUrl+Routes().category+Routes().user+id;
 				var idRender = 'dashboardView';
 				var navigate = 'dashboard';
 				$http().get( url , idRender ,navigate );
-				 // $.ajax({
-				 //    type: 'get',
-				 //    url: 'http://localhost/eWallet/server/category/user/'+id,
-				 //    success: function(response) {
-				 //    	var html = $("#dashboardView").html();
-					// 	var template = Handlebars.compile(html);
-
-					// 	$('body').append(template({item: response}));
-				 //    },
-				 //    error: function(response){
-				 //        alert('Error!');
-				 //    }
-			  // 	});
 			}
 		},
 	}
@@ -269,14 +261,17 @@ $( document ).on( 'submit', '#login-form', function(e){
 $( document ).on( 'submit', '#register-form', function(e){
 	e.preventDefault();
 	var data = {};
-	data['name']    = document.forms["register-form"]["name"].value;
+	data['name']     = document.forms["register-form"]["name"].value;
 	data['email']    = document.forms["register-form"]["email"].value;
 	data['password'] = document.forms["register-form"]["password"].value;
 	var json = JSON.stringify(data);
 
 	var onRegister = function( response ){
+		Helper().log( response );
 		var access_token = response.token;
-    	Helper().setCookie('access_token='+access_token);
+		var user_id      = response.user_id;
+    	var data         = JSON.stringify({"token":access_token,"user_id":user_id});
+    	Helper().setCookie(data);
 		Finch.navigate('dashboard');
 	}	
 
@@ -311,8 +306,8 @@ $( document ).on( 'submit', '#forgot-form', function(e){
 $( document ).on( 'submit', '#recover-form', function(e){
 	e.preventDefault();
 	var data = {};
-	data['email'] = Helper().getCookie();
-	data['token'] = document.forms["recover-form"]["token"].value;
+	data['email']    = Helper().getCookie();
+	data['token']    = document.forms["recover-form"]["token"].value;
 	data['password'] = document.forms["recover-form"]["password"].value;
 	var json = JSON.stringify(data);
 
@@ -356,44 +351,44 @@ function $user(){
 	return {
 		login: function( payload ){
 			return $http().post({
-				url: Routes().user+Routes().login,
-				payload: payload,
+				url     : Routes().user+Routes().login,
+				payload : payload,
 			});
 		},
 
 		register: function( payload ){
 			return $http().post({
-				url: Routes().user+Routes().register,
-				payload: payload,
+				url     : Routes().user+Routes().register,
+				payload : payload,
 			});
 		},
 
 		forgot: function( payload ){
 			return $http().post({
-				url: Routes().user+Routes().forgot,
-				payload: payload,
+				url     : Routes().user+Routes().forgot,
+				payload : payload,
 			});
 		},
 
 		recover: function( payload ){
 			return $http().post({
-				url: Routes().user+Routes().recover,
-				payload: payload,
+				url     : Routes().user+Routes().recover,
+				payload : payload,
 			});
 		},
 		resendToken: function( payload ){
 			return $http().post({
-				url: Routes().user+Routes().resendToken,
-				payload: payload,
+				url     : Routes().user+Routes().resendToken,
+				payload : payload,
 			});
 		}
 	}
 }
 function Config(){
 	return{
-		mode      : 'production',
-		apiUrl    : 'localhost/eWallet/server/',
-		cookieVar : 'ewallet',
+		mode             : 'production',
+		apiUrl           : 'localhost/eWallet/server/',
+		cookieVar        : 'ewallet',
 		categoryIDCookie : 'categoryIDCookie',
 	}
 }
@@ -401,7 +396,7 @@ function Helper(){
 	return{
 		render: function( data ){
 			var template = Handlebars.compile(data);
-			var html = template(template);
+			var html     = template(template);
 			$("#render").html(html);
 		},
 		log: function( data ){
@@ -424,24 +419,24 @@ function $http(){
 		},
 		delete: function( param ){
 			$.ajax({
-			    type: 'delete',
-			    url: Config().apiUrl + param.url+param.payload,
-			    success: function(response) {
+			    type    : 'delete',
+			    url     : Config().apiUrl + param.url+param.payload,
+			    success : function(response) {
 			        location.reload();
 			    },
-			    error: function(response){
+			    error   : function(response){
 			        alert('Error!');
 			    }
 		  	});
 		},
 		put: function( param ){
 			$.ajax({
-			    type: 'put',
-			    url: Config().apiUrl + param.url+param.id,
-			    data: JSON.stringify(param.title),
-			    contentType: 'application/json',
-			    dataType: 'json',
-			    success: function(response) {
+			    type        : 'put',
+			    url         : Config().apiUrl + param.url+param.id,
+			    data        : JSON.stringify(param.title),
+			    contentType : 'application/json',
+			    dataType    : 'json',
+			    success     : function(response) {
 			    	$(".editView").hide();
 			    	$(".editDataView").hide();
 			        Finch.navigate(param.navigate);
@@ -453,8 +448,8 @@ function $http(){
 		},
 		get: function( url , idRender , navigate ){
 			$.ajax({
-				type:'get',
-				url: url,
+				type    :'get',
+				url     : url,
 				success :function( response ){
 					$(".dashboard").hide();
 					var html = $("#"+idRender).html();
@@ -563,21 +558,11 @@ $(document).on('click','.editData',function(e){
 });
 
 function appendLocalStorage( storage_name, value ){
-	var cookie_arr = {};
-	var cookie = JSON.parse(Helper().getCookie());	
-	cookie[storage_name] =  value;
-	
+	var cookie_arr       = {};
+	var cookie           = JSON.parse(Helper().getCookie());	
+	cookie[storage_name] =  value;	
 	var json = JSON.stringify(cookie);
 	Helper().setCookie(json);
 }
-
-// $( document ).ready(function() {
-// 	var token = Helper().getCookie();
-//     if(token == null){
-// 		Finch.navigate('login');
-// 	}else{
-// 		Finch.navigate('dashboard');
-// 	}
-// });
 
 })();

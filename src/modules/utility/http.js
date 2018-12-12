@@ -5,24 +5,24 @@ function $http(){
 		},
 		delete: function( param ){
 			$.ajax({
-			    type: 'delete',
-			    url: Config().apiUrl + param.url+param.payload,
-			    success: function(response) {
+			    type    : 'delete',
+			    url     : Config().apiUrl + param.url+param.payload,
+			    success : function(response) {
 			        location.reload();
 			    },
-			    error: function(response){
+			    error   : function(response){
 			        alert('Error!');
 			    }
 		  	});
 		},
 		put: function( param ){
 			$.ajax({
-			    type: 'put',
-			    url: Config().apiUrl + param.url+param.id,
-			    data: JSON.stringify(param.title),
-			    contentType: 'application/json',
-			    dataType: 'json',
-			    success: function(response) {
+			    type        : 'put',
+			    url         : Config().apiUrl + param.url+param.id,
+			    data        : JSON.stringify(param.title),
+			    contentType : 'application/json',
+			    dataType    : 'json',
+			    success     : function(response) {
 			    	$(".editView").hide();
 			    	$(".editDataView").hide();
 			        Finch.navigate(param.navigate);
@@ -34,8 +34,8 @@ function $http(){
 		},
 		get: function( url , idRender , navigate ){
 			$.ajax({
-				type:'get',
-				url: url,
+				type    :'get',
+				url     : url,
 				success :function( response ){
 					$(".dashboard").hide();
 					var html = $("#"+idRender).html();

@@ -14,19 +14,21 @@ function dashboard(){
 				Finch.navigate('login');
 			}else{
 				$( "#hide" ).hide();
-				var url = Config().apiUrl+Routes().category+Routes().categoryEdit+category_id;
+				var url      = Config().apiUrl+Routes().category+Routes().categoryEdit+category_id;
 				var idRender = 'editView';
 				var navigate = 'edit';
 				$http().get( url , idRender ,navigate );
 			}
 		},
 		rendercategoryData:function(){
-			var cookie = JSON.parse(Helper().getCookie());
+			var cookie      = JSON.parse(Helper().getCookie());
 			var category_id = cookie.categoryData_id;
 			if(category_id == null){
 				Finch.navigate('dashboard');
 			}else{
 				$( "#hide" ).hide();
+				$( ".editDataView" ).hide();
+				$( ".editCategoryDiv" ).hide();				
 				var url = Config().apiUrl+Routes().datas+Routes().show+category_id;
 				var idRender = 'categoryView';
 				var navigate = 'categoryData';
@@ -54,8 +56,8 @@ $( document ).on( 'submit', '#addCategory-form', function(e){
 	e.preventDefault();
 	var data = Helper().getCookie();
 	data = JSON.parse(data);
-	var data_category = {};
-	data_category['title'] = document.forms["addform"]["title"].value;
+	var data_category        = {};
+	data_category['title']   = document.forms["addform"]["title"].value;
 	data_category['user_id'] = data.user_id;
 	var json = JSON.stringify(data_category);
 
@@ -91,11 +93,11 @@ $( document ).on( 'submit', '#editCategory-form', function(e){
 //<-------------------- Add Data form-------------------->
 $( document ).on( 'submit', '#addData', function(e){
 	e.preventDefault();
-	var category_id = Helper().getCookie();
-	var data_id = JSON.parse(category_id);
-	var id = data_id.categoryData_id;
-	var data = {};
-	data['field_name'] = $("#fieldName").val();
+	var category_id     = Helper().getCookie();
+	var data_id         = JSON.parse(category_id);
+	var id              = data_id.categoryData_id;
+	var data            = {};
+	data['field_name']  = $("#fieldName").val();
 	data['description'] = $("#description").val();
 	var json = JSON.stringify(data);
 
@@ -120,11 +122,10 @@ $(document).on('click','.deleteData',function(e){
 //<---------------- Edit Data ---------------->
 $( document ).on( 'submit', '#editData', function(e){
 	e.preventDefault();
-	var cookie = JSON.parse(Helper().getCookie());
-	var id = cookie.editData_id;
-	var data = {};
-
-	data['field_name'] = $("[name=fieldName]").val();
+	var cookie          = JSON.parse(Helper().getCookie());
+	var id              = cookie.editData_id;
+	var data            = {};
+	data['field_name']  = $("[name=fieldName]").val();
 	data['description'] = $("[name=description]").val();
 
 	$dashboard().editData( id,data );
@@ -133,5 +134,5 @@ $( document ).on( 'submit', '#editData', function(e){
 $(document).on('click','#dashboard',function(e){
 	e.preventDefault();
 	Finch.navigate('dashboard');
-	location.reload();
+	// location.reload();
 });

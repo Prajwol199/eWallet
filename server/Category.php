@@ -5,7 +5,8 @@ require_once('mailer.php');
 
 class Category extends Wrapper{
 
-	protected $table_category='categories'; 
+	protected $table_category = 'categories';
+	protected $table_data     = 'data';
 
 	public function __construct(){
         $this->db = Database::instantiate();
@@ -44,12 +45,12 @@ class Category extends Wrapper{
         if( !empty($user_id) && !empty($title)){
         	$insert_data=[
                 'user_id'=>$user_id,
-                'title'=>$title
+                'title'  =>$title
             ];
             if($this->db->insert($this->table_category,$insert_data)){
             	$this->response( 200, array(
     					'message'=>'Category Insert succesfully',
-                        'data' => $insert_data
+                        'data'   => $insert_data
                     ));
             }else{
             	$this->response(200,array(
@@ -64,8 +65,8 @@ class Category extends Wrapper{
     }
 
     public function editCategory(){
-    	$data = json_decode(file_get_contents('php://input'),true);
-    	$id = $_GET['id'];
+    	$data  = json_decode(file_get_contents('php://input'),true);
+    	$id    = $_GET['id'];
     	$title = $data['title'];
     	if(!empty($title)){
     		$update_data = array(
@@ -74,7 +75,7 @@ class Category extends Wrapper{
     		if($this->db->update($this->table_category,$update_data,['id'=>$id])){
     			$this->response( 200, array(
     					'message'=>'Category Update succesfully',
-                        'data' => $update_data
+                        'data'   => $update_data
                     ));
     		}else{
     			$this->response(200,array(
@@ -89,24 +90,40 @@ class Category extends Wrapper{
     }
 
     public function deleteCategory(){
-    	// $data = json_decode(file_get_contents('php://input'),true);
   		$id = $_GET['id'];
   		if(!empty($id)){
-  			if($this->db->innerjoin($id)){
-  				$this->response(200,array(
-  					'message'=>'Category delete successfully',
-  					'data'=>array(
-  						'id'=>$id
-  					)
-  				));
+  			$category_id_in_data = $this->db->select($this->table_data,['*'],['category_id'=>$id]);
+  			$num_rows = mysqli_num_rows($category_id_in_data);
+  			if($num_rows > 0 ){
+  				 if($this->db->innerjoin($id)){
+	  				$this->response(200,array(
+	  					'message'=>'Category delete successfully',
+	  					'data'   =>array(
+	  					'id'     =>$id
+	  					)
+	  				));
+	  			}else{
+	  				$this->response(200,array(
+	    				'message' => "Error! category not deleted"
+	    			));
+	  			}
   			}else{
-  				$this->response(200,array(
-    				'message'=>"Error! category not deleted"
-    		));
+  				if($this->db->delete($this->table_category,['id'=>$id])){
+  					$this->response(200,array(
+	  					'message'=>'Category delete successfully',
+	  					'data'   =>array(
+	  					'id'     =>$id
+	  					)
+	  				));
+  				}else{
+  					$this->response(200,array(
+	    				'message' => "Error! category not deleted"
+	    			));
+  				}
   			}
   		}else{
   			$this->response(200,array(
-    			'message'=>"Category ID is empty"
+    			'message' => "Category ID is empty"
     		));
   		}
     }
@@ -118,11 +135,11 @@ class Category extends Wrapper{
     		$fetch_title = $this->fetch($select_data);
     		if(!empty($fetch_title)){
     			$this->response(200,array(
-  					'data'=>$fetch_title
+  					'data' => $fetch_title
   				));
     		}else{
     			$this->response(200,array(
-    				'message'=>"Error! Something gone wrong"
+    				'message' => "Error! Something gone wrong"
     			));
     		}
     	}else{
@@ -135,7 +152,7 @@ class Category extends Wrapper{
     public function user(){
     	$user_id = $_GET['id'];
   		if(!empty($user_id)){
-  			$select_db = $this->db->select($this->table_category,['id','title'],['user_id'=>$user_id]);
+  			$select_db  = $this->db->select($this->table_category,['id','title'],['user_id'=>$user_id]);
   			$fetch_data = $this->fetch($select_db);
   			if(!empty($fetch_data)){
   				$this->response(200,array(

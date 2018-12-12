@@ -90,19 +90,9 @@ $(document).on('click','.editData',function(e){
 });
 
 function appendLocalStorage( storage_name, value ){
-	var cookie_arr = {};
-	var cookie = JSON.parse(Helper().getCookie());	
-	cookie[storage_name] =  value;
-	
+	var cookie_arr       = {};
+	var cookie           = JSON.parse(Helper().getCookie());	
+	cookie[storage_name] =  value;	
 	var json = JSON.stringify(cookie);
 	Helper().setCookie(json);
 }
-
-// $( document ).ready(function() {
-// 	var token = Helper().getCookie();
-//     if(token == null){
-// 		Finch.navigate('login');
-// 	}else{
-// 		Finch.navigate('dashboard');
-// 	}
-// });

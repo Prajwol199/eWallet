@@ -1,5 +1,5 @@
 <script type="text/template" id="dashboardView">
-	<div class="dashboard">
+	<div class="dashboard col-md-8 col-md-offset-2">
 		<div align="center" style="margin-bottom:10px;">
 			<button id="dashboard" class="btn btn-primary" >Dashboard</button>
 			<button id="logout" class="btn btn-success" >Logout</button>
@@ -30,8 +30,7 @@
 			</tr>
 			{{/each}}
 		</table>
-	</div>
-	
+	</div>	
 </script>
 
 <script type="text/template" id="addCategoryView">
@@ -73,7 +72,7 @@
 		    <div class="row">
 		        <div class="loginPage col-md-5 col-md-offset-3">
 		            <div class="panel panel-primary" >
-		                <div class="panel-heading" align="center">Add Category</div>
+		                <div class="panel-heading" align="center">Edit Category</div>
 		                <div class="panel-body">
 
 		                    <form  method="post" name="addform" id="editCategory-form">
