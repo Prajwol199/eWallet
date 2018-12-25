@@ -1,41 +1,34 @@
 function Routes(){
 	return{
-		category       :'category/',
+		category        :'category/',
 		addCategory    :'addCategory/',
-		deleteCategory :'deleteCategory/',
-		editCategory   :'editCategory/',
-		categoryEdit   :'editCategoryData/',
-		login          :'login',
-		user           :'user/',
-		register       :'register',
-		forgot         :'forgot',
-		dashboard      :'dashboard',
-		recover        :'recover',
-		resendToken    :'resendToken',
-		edit           :'edit',
-		categoryData   :'categoryData',
-		datas          :'data/',
-		addData        :'add',
-		deleteData     :'delete/',
-		show           :'show/',
+		login           :'login',
+		user            :'user/',
+		register        :'register',
+		forgot          :'forgot',
+		dashboard       :'dashboard',
+		recover         :'recover',
+		resendToken     :'resendToken',
+		edit            :'edit',
+		categoryData    :'categoryData/',
+		datas           :'data/',
+		first           :'/',
+		addCategoryData :'addCategoryData',
+		addCategoryData :'addCategoryData',
 		editData       :'editData',
-		showData       :'showEditData/',
-		first          :'/',
 	}
 }
 //<----------- dashboard -------------->
 Finch.route(Routes().addCategory,function(){
 	dashboard().renderAddCategory();
 });
-Finch.route(Routes().edit,function(){
-	dashboard().renderEdit();
-});
+
 Finch.route(Routes().categoryData,function(){
 	dashboard().rendercategoryData();
 });
 
-Finch.route(Routes().editData,function(){
-	dashboard().rendereditData();
+Finch.route(Routes().addCategoryData,function(){
+	dashboard().renderaddCategoryData();
 });
 //<----------- user -------------->
 Finch.route(Routes().login,function(){
@@ -68,13 +61,6 @@ $(document).on('click','.navigator',function(e){
 	Finch.call( route );
 });
 
-$(document).on('click','.edit',function(e){
-	e.preventDefault();
-	var route = $(this).data('route');
-	appendLocalStorage( 'category_id', $(this).data('id') );
-	Finch.call( route );
-});
-
 $(document).on('click','.categoryData',function(e){
 	e.preventDefault();
 	var route = $(this).data('route');
@@ -82,17 +68,10 @@ $(document).on('click','.categoryData',function(e){
 	Finch.call( route );
 });
 
-$(document).on('click','.editData',function(e){
-	e.preventDefault();
-	var route = $(this).data('route');
-	appendLocalStorage( 'editData_id', $(this).data('id') );
-	Finch.call( route );
-});
-
 function appendLocalStorage( storage_name, value ){
 	var cookie_arr       = {};
-	var cookie           = JSON.parse(Helper().getCookie());	
+	var cookie           = JSON.parse(Helper().getCookie());
 	cookie[storage_name] =  value;	
-	var json = JSON.stringify(cookie);
+	var json             = JSON.stringify(cookie);
 	Helper().setCookie(json);
 }

@@ -11,7 +11,7 @@ function user(){
 				var template = $('#loginView').html();
 				Finch.navigate('login');
 				Helper().render( template );
-			}else{				
+			}else{			
 				Finch.navigate('dashboard');
 			}
 		},
@@ -28,13 +28,15 @@ function user(){
 			if(token == null){
 				Finch.navigate('login');
 			}else{
-				$( "#hide" ).hide();
+				$("#hide" ).hide();
 				$(".addCategoryView").hide();
 				$(".small_content").hide();
 				$(".categoryView").hide();	
 				$(".editView").hide();
-				$(".editDataView").hide();						
-				var url = Config().apiUrl+Routes().category+Routes().user+id;
+				$(".editDataView").hide();
+				$(".addDataView").hide();						
+				// var url = Config().apiUrl+Routes().category+Routes().user+id;
+				var url = Config().apiUrl+Routes().category+id;
 				var idRender = 'dashboardView';
 				var navigate = 'dashboard';
 				$http().get( url , idRender ,navigate );
@@ -49,25 +51,25 @@ $( document ).on( 'submit', '#login-form', function(e){
 	var data = {};
 	data['email']    = document.forms["form"]["email"].value;
 	data['password'] = document.forms["form"]["password"].value;
-	var json = JSON.stringify(data);
+	var json         = JSON.stringify(data);
 	
 	var onLogin = function( response ){
 		Helper().log( response );
-    	var access_token = response.token;
-    	var user_id = response.user_id;
-    	var data = JSON.stringify({"token":access_token,"user_id":user_id});
-    	Helper().setCookie(data);
-    	var data_token = JSON.parse(Helper().getCookie());   	
-    	if(data_token.token == null ){
-    		alert('Invalid one');
-    	}else{
+		var access_token = response.token;
+		var user_id      = response.user_id;
+		var data         = JSON.stringify({"token":access_token,"user_id":user_id});
+		Helper().setCookie(data);
+		var data_token   = JSON.parse(Helper().getCookie());   	
+		if(data_token.token == null ){
+			alert('Invalid one');
+		}else{
 			$(".login").hide();
 			Finch.navigate('dashboard');
-    	}
+		}
 	}
 
 	var onError = function( err ){
-	 	Helper().log( err );
+		Helper().log( err );
 	}
 
 	$user().login( json ).then( onLogin, onError );
@@ -86,13 +88,13 @@ $( document ).on( 'submit', '#register-form', function(e){
 		Helper().log( response );
 		var access_token = response.token;
 		var user_id      = response.user_id;
-    	var data         = JSON.stringify({"token":access_token,"user_id":user_id});
-    	Helper().setCookie(data);
+		var data         = JSON.stringify({"token":access_token,"user_id":user_id});
+		Helper().setCookie(data);
 		Finch.navigate('dashboard');
 	}	
 
 	var onError = function( err ){
-	 	Helper().log( err );
+		Helper().log( err );
 	}
 
 	$user().register( json ).then( onRegister, onError );
@@ -112,7 +114,7 @@ $( document ).on( 'submit', '#forgot-form', function(e){
 	}	
 
 	var onError = function( err ){
-	 	Helper().log( err );
+		Helper().log( err );
 	}
 
 	$user().forgot( json ).then( onForgot, onError );

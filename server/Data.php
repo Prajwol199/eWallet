@@ -1,40 +1,16 @@
 <?php
 require_once('Wrapper.php');
 require_once('Database.php');
-require_once('mailer.php');
+require_once('JWT.php');
+require_once('Mailer.php');
 
 class Data extends Wrapper{
 	protected $table_data ='data'; 
 
 	public function __construct(){
+
         $this->db = Database::instantiate();
 
-        $this->register_route( 'add', array(
-            'method'   => 'post',
-            'callback' => array( $this, 'addData' )
-        ));
-
-        $this->register_route( 'edit', array(
-            'method'   => 'put',
-            'callback' => array( $this, 'editData' )
-        ));
-
-        $this->register_route( 'delete', array(
-            'method'   => 'delete',
-            'callback' => array( $this, 'deleteData' )
-        ));
-
-        $this->register_route( 'show', array(
-            'method'   => 'get',
-            'callback' => array( $this, 'showData' )
-        ));
-
-        $this->register_route( 'showEditData', array(
-            'method'   => 'get',
-            'callback' => array( $this, 'showEditData' )
-        ));
-
-        parent::__construct();
     }
 
     public function addData(){
@@ -98,7 +74,7 @@ class Data extends Wrapper{
   				$this->response(200,array(
   					'message' => 'Category delete successfully',
   					'data'    => array(
-  					'id'      =>$id
+  					'id'      => $id
   					)
   				));
   			}else{
@@ -113,46 +89,35 @@ class Data extends Wrapper{
   		}
     }
 
-    public function showData(){
-    	$category_id = $_GET['id'];
-    	if(!empty($category_id)){
-  			$select_db  = $this->db->select($this->table_data,['*'],['category_id'=>$category_id]);
-  			$fetch_data = $this->fetch($select_db);
-  			if(!empty($fetch_data)){
-  				$this->response(200,array(
-  					'data' => $fetch_data
-  				));
-  			}else{
-  				$this->response(200,array(
-    				'message' => "Error! Something gone wrong"
-    			));
-  			}
-  		}else{
-  			$this->response(200,array(
-    			'message' => "Catregory ID is empty"
-    		));
-  		}
-    }
-
-    public function showEditData(){
-    	$id = $_GET['id'];
-    	if(!empty($id)){
-  			$select_db  = $this->db->select($this->table_data,['*'],['id'=>$id]);
-  			$fetch_data = $this->fetch($select_db);
-  			if(!empty($fetch_data)){
-  				$this->response(200,array(
-  					'data' => $fetch_data
-  				));
-  			}else{
-  				$this->response(200,array(
-    				'message' => "Error! Something gone wrong"
-    			));
-  			}
-  		}else{
-  			$this->response(200,array(
-    			'message' => "Catregory ID is empty"
-    		));
-  		}
+    public function getDataById(){
+      $token = getallheaders();
+      if(isset($token['token'])){
+            $access_token = $token['token'];
+            $jwt_email = JWT::decode($access_token,'abc123',['HS256']);
+            $email = $jwt_email->email;
+        }
+      if(!empty($email)){
+      	$category_id = $_GET['id'];
+      	if(!empty($category_id)){
+    			$select_db  = $this->db->select($this->table_data,['*'],['category_id'=>$category_id]);
+    			$fetch_data = $this->fetch($select_db);
+    			if(!empty($fetch_data)){
+    				$this->response(200,array(
+    					'data' => $fetch_data
+    				));
+    			}else{
+    				$this->response(200,array(
+      				'message' => "Error! Something gone wrong"
+      			));
+    			}
+    		}else{
+    			$this->response(200,array(
+      			'message' => "Catregory ID is empty"
+      		));
+    		}
+      }else{
+        $this->invalid_access();
+      }
     }
 }
 $test = new Data();

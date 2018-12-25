@@ -1,7 +1,7 @@
 <script type="text/template" id="loginView">
 	<div class="login">
 	    <div class="row">
-	        <div class="loginPage col-md-5 col-md-offset-4">
+	        <div class="loginPage col-md-6 col-md-offset-3">
 	            <div class="panel panel-primary" >
 	                <div class="panel-heading" align="center">Login to dashboard</div>
 	                <div class="panel-body">
@@ -47,7 +47,6 @@
 					<label>password :</label>
 					<input type="password" name="password" id="pwd" class="form-control">
 				</div>
-
 				<button type="submit" id="submit" class="btn btn-primary">Register</button>
 			</form>
 		</div>
@@ -55,20 +54,20 @@
 </script>
 
 <script type="text/template" id="forgotView">
-	<div class="loginPage col-md-5 col-md-offset-4">
+	<div class="loginPage col-md-6 col-md-offset-3">
 	    <div class="panel panel-primary">
 	        <div class="panel-heading">Recover password</div>
-	        	<div class="panel-body">
-	        		<form name="forgot-form" id="forgot-form">
-	       				<div class="form-group">
-	          				<label for="uname"> Enter your email </label>
-	          				<input type="text" name="email" id="name" class="form-control">
-	       				</div>
-	       				<div class="form-group">
-	          				<button class="btn btn-primary btn pull-right btn-md">Recover</button>
-	        			</div>
-	        		</form>
-	        	</div>
+        	<div class="panel-body">
+        		<form name="forgot-form" id="forgot-form">
+       				<div class="form-group">
+          				<label for="uname"> Enter your email </label>
+          				<input type="text" name="email" id="name" class="form-control">
+       				</div>
+       				<div class="form-group">
+          				<button class="btn btn-primary btn pull-right btn-md">Recover</button>
+        			</div>
+        		</form>
+        	</div>
 	    </div>
 	</div>
 </script>
@@ -76,24 +75,24 @@
 	<div class="loginPage col-md-5 col-md-offset-4">
 	    <div class="panel panel-primary">
 	        <div class="panel-heading">Recover password</div>
-	        	<div class="panel-body">
-	        		<form id="recover-form"" name="recover-form">
-	       				<div class="form-group">
-	          				<label for="uname"> Enter Token </label>
-	          				<input type="text" name="token" id="token" class="form-control">
-	       				</div>
-	              <div class="form-group">
-	                  <label for="uname"> New Password </label>
-	                  <input type="password" name="password" id="npass" class="form-control">
-	              </div>
-	              <div class="form-group">
-	                  <button class="btn btn-success btn-md" id="resend-token" >Resend Token</button>
-	              </div>
-	       				<div class="form-group">
-	          				<button class="btn btn-primary btn pull-right btn-md">Recover</button>
-	        			</div>
-	        		</form>
-	        	</div>
+        	<div class="panel-body">
+        		<form id="recover-form"" name="recover-form">
+       				<div class="form-group">
+          				<label for="uname"> Enter Token </label>
+          				<input type="text" name="token" id="token" class="form-control">
+       				</div>
+              <div class="form-group">
+                  <label for="uname"> New Password </label>
+                  <input type="password" name="password" id="npass" class="form-control">
+              </div>
+              <div class="form-group">
+                  <button class="btn btn-success btn-md" id="resend-token" >Resend Token</button>
+              </div>
+       				<div class="form-group">
+          				<button class="btn btn-primary btn pull-right btn-md">Recover</button>
+        			</div>
+        		</form>
+        	</div>
 	    </div>
 	</div>
 </script>

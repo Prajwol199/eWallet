@@ -1,7 +1,7 @@
 function Config(){
 	return{
 		mode             : 'production',
-		apiUrl           : 'localhost/eWallet/server/',
+		apiUrl           : 'http://localhost/eWallet/server/',
 		cookieVar        : 'ewallet',
 		categoryIDCookie : 'categoryIDCookie',
 	}

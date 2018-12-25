@@ -9,19 +9,6 @@ function dashboard(){
 			$( ".dashboard" ).hide();
 			Helper().render( template );
 		},
-		renderEdit:function(){
-			var cookie = JSON.parse(Helper().getCookie());
-			var category_id = cookie.category_id;
-			if(category_id == null){
-				Finch.navigate('login');
-			}else{
-				$( "#hide" ).hide();
-				var url      = Config().apiUrl+Routes().category+Routes().categoryEdit+category_id;
-				var idRender = 'editView';
-				var navigate = 'edit';
-				$http().get( url , idRender ,navigate );
-			}
-		},
 		rendercategoryData:function(){
 			var cookie      = JSON.parse(Helper().getCookie());
 			var category_id = cookie.categoryData_id;
@@ -31,26 +18,20 @@ function dashboard(){
 				$( "#hide" ).hide();
 				$( ".editDataView" ).hide();
 				$( ".editCategoryDiv" ).hide();				
-				var url = Config().apiUrl+Routes().datas+Routes().show+category_id;
+				$( ".addDataView" ).hide();				
+				var url = Config().apiUrl+Routes().datas+category_id;
 				var idRender = 'categoryView';
 				var navigate = 'categoryData';
 				$http().get( url , idRender ,navigate );
 			}
 		},
-		rendereditData:function(){
-			var cookie = JSON.parse(Helper().getCookie());
-			var id = cookie.editData_id;
-			if(id == null){
-				Finch.navigate('categoryData');
-			}else{
-				$( "#hide" ).hide();
-				$(".categoryView").hide();
-				var url = Config().apiUrl+Routes().datas+Routes().showData+id;
-				var idRender = 'editDataView';
-				var navigate = 'editData';
-				$http().get( url , idRender ,navigate )
-			}
-		},
+		renderaddCategoryData: function(){
+			var template = $('#addDataView').html();
+			Finch.navigate('addCategoryData');
+			$( "#hide" ).hide();
+			$( ".categoryView" ).hide();
+			Helper().render( template );
+		}
 	}
 }
 //<-------------------- AddCategory form-------------------->
@@ -58,20 +39,19 @@ $( document ).on( 'submit', '#addCategory-form', function(e){
 	e.preventDefault();
 	var data = Helper().getCookie();
 	data = JSON.parse(data);
+	var user_id              = data.user_id;
 	var data_category        = {};
 	data_category['title']   = document.forms["addform"]["title"].value;
-	data_category['user_id'] = data.user_id;
 	var json = JSON.stringify(data_category);
 
 	var onAdd = function( response ){
 		Finch.navigate('dashboard');
-		location.reload();
 	}
 	
 	var onError = function( err ){
 	 	Helper().log( err );
 	}
-	$dashboard().addCategory( json ).then( onAdd, onError );
+	$dashboard().addCategory( json , user_id ).then( onAdd, onError );
 });
 
 //<----------- Delete Category---------------->
@@ -82,16 +62,6 @@ $(document).on('click','.delete',function(e){
 	$dashboard().deleteCategory( id );
 });
 
-//<---------------- Edit Category ---------------->
-$( document ).on( 'submit', '#editCategory-form', function(e){
-	e.preventDefault();
-	var cookie = JSON.parse(Helper().getCookie());
-	var id = cookie.category_id;
-	var data = {};
-	data['title'] = $("#title").val();
-
-	$dashboard().editCategory( id,data );
-});
 //<-------------------- Add Data form-------------------->
 $( document ).on( 'submit', '#addData', function(e){
 	e.preventDefault();
@@ -105,7 +75,7 @@ $( document ).on( 'submit', '#addData', function(e){
 
 	var onaddData = function( response ){
 		Finch.navigate('categoryData');
-		location.reload();
+		// location.reload();
 	}
 	
 	var onError = function( err ){
@@ -121,63 +91,95 @@ $(document).on('click','.deleteData',function(e){
 
 	$dashboard().deleteData( id );
 });
-//<---------------- Edit Data ---------------->
-$( document ).on( 'submit', '#editData', function(e){
-	e.preventDefault();
-	var cookie          = JSON.parse(Helper().getCookie());
-	var id              = cookie.editData_id;
-	var data            = {};
-	data['field_name']  = $("[name=fieldName]").val();
-	data['description'] = $("[name=description]").val();
 
-	$dashboard().editData( id,data );
-});
 //<---------------- Dashboard redirect ---------------->
 $(document).on('click','#dashboard',function(e){
 	e.preventDefault();
 	Finch.navigate('dashboard');
 	// location.reload();
 });
+
+//<---------------- Edit Data -------------------->
+//event on edit categoty click
+$(document).on('click','#btnEdit',function(e){
+	e.preventDefault();
+	var id = $(e.target).data('id');
+	$(".title-"+id).hide();
+	$("#editCategoryField-"+id).show();
+	$("#editTitle-"+id).focus();
+});
+
+//<------event on save categoty click --------->
+$(document).on('click','#btnSave',function(e){
+	e.preventDefault();
+	var id =  $(e.target).data('id');
+
+	var data = {};
+	data['title'] = $("[name=titleName-"+id+"]").val();
+
+	$dashboard().editCategory( id,data );
+});
+
+//<---------------- Edit Data -------------------->
+
+$(document).on('click','#btnEditData',function(e){
+	e.preventDefault();
+	var id = $(e.target).data('id');
+	$(".fieldName-"+id).hide();
+	$(".description-"+id).hide();
+	$("#editDataField-"+id).show();
+	$("#editTitleField-"+id).show();
+	$("#editFieldName-"+id).focus();
+});
+
+$(document).on('click','#btnSaveData',function(e){
+	e.preventDefault();
+	var id =  $(e.target).data('id');
+
+	var data = {};
+	data['field_name']  = $("[name=fieldName-"+id+"]").val();
+	data['description'] = $("[name=description-"+id+"]").val();
+
+	$dashboard().editData( id,data );
+});
 function $dashboard(){
 	return {
-		addCategory: function( payload ){
+		addCategory: function( payload, user_id ){
 			return $http().post({
-				url     : Routes().category+Routes().addCategory,
+				url     : Routes().category+user_id,
 				payload : payload,
 			});
 		},
-		deleteCategory: function( payload ){
+		deleteCategory: function( id ){
 			return $http().delete({
-				url     : Routes().category+Routes().deleteCategory,
-				payload : payload,
+				url     : Routes().category+id,
+				id      : id,
 			});
 		},
 		editCategory: function( id,title ){
 			return $http().put({
-				url      : Routes().category+Routes().editCategory,
-				id       : id,
+				url      : Routes().category+id,
+				id       : id,    
 				title    : title,
-				navigate : 'dashboard',
 			});
 		},
 		addData: function( payload , id ){
 			return $http().post({
-				url     : Routes().datas+Routes().addData+'/'+id,
+				url     : Routes().datas+id,
 				payload : payload,
 			});
 		},
-		deleteData: function( payload ){
+		deleteData: function( id ){
 			return $http().delete({
-				url     : Routes().datas+Routes().deleteData,
-				payload : payload,
+				url     : Routes().datas+id,
+				id      : id,
 			});
 		},
 		editData: function( id, title ){
 			return $http().put({
-				url      : Routes().datas+Routes().edit+'/',
+				url      : Routes().datas+id,
 				id       : id,
 				title    : title,
-				navigate : 'categoryData',
 			});
 		},
 	}
@@ -195,7 +197,7 @@ function user(){
 				var template = $('#loginView').html();
 				Finch.navigate('login');
 				Helper().render( template );
-			}else{				
+			}else{			
 				Finch.navigate('dashboard');
 			}
 		},
@@ -212,13 +214,15 @@ function user(){
 			if(token == null){
 				Finch.navigate('login');
 			}else{
-				$( "#hide" ).hide();
+				$("#hide" ).hide();
 				$(".addCategoryView").hide();
 				$(".small_content").hide();
 				$(".categoryView").hide();	
 				$(".editView").hide();
-				$(".editDataView").hide();						
-				var url = Config().apiUrl+Routes().category+Routes().user+id;
+				$(".editDataView").hide();
+				$(".addDataView").hide();						
+				// var url = Config().apiUrl+Routes().category+Routes().user+id;
+				var url = Config().apiUrl+Routes().category+id;
 				var idRender = 'dashboardView';
 				var navigate = 'dashboard';
 				$http().get( url , idRender ,navigate );
@@ -233,25 +237,25 @@ $( document ).on( 'submit', '#login-form', function(e){
 	var data = {};
 	data['email']    = document.forms["form"]["email"].value;
 	data['password'] = document.forms["form"]["password"].value;
-	var json = JSON.stringify(data);
+	var json         = JSON.stringify(data);
 	
 	var onLogin = function( response ){
 		Helper().log( response );
-    	var access_token = response.token;
-    	var user_id = response.user_id;
-    	var data = JSON.stringify({"token":access_token,"user_id":user_id});
-    	Helper().setCookie(data);
-    	var data_token = JSON.parse(Helper().getCookie());   	
-    	if(data_token.token == null ){
-    		alert('Invalid one');
-    	}else{
+		var access_token = response.token;
+		var user_id      = response.user_id;
+		var data         = JSON.stringify({"token":access_token,"user_id":user_id});
+		Helper().setCookie(data);
+		var data_token   = JSON.parse(Helper().getCookie());   	
+		if(data_token.token == null ){
+			alert('Invalid one');
+		}else{
 			$(".login").hide();
 			Finch.navigate('dashboard');
-    	}
+		}
 	}
 
 	var onError = function( err ){
-	 	Helper().log( err );
+		Helper().log( err );
 	}
 
 	$user().login( json ).then( onLogin, onError );
@@ -270,13 +274,13 @@ $( document ).on( 'submit', '#register-form', function(e){
 		Helper().log( response );
 		var access_token = response.token;
 		var user_id      = response.user_id;
-    	var data         = JSON.stringify({"token":access_token,"user_id":user_id});
-    	Helper().setCookie(data);
+		var data         = JSON.stringify({"token":access_token,"user_id":user_id});
+		Helper().setCookie(data);
 		Finch.navigate('dashboard');
 	}	
 
 	var onError = function( err ){
-	 	Helper().log( err );
+		Helper().log( err );
 	}
 
 	$user().register( json ).then( onRegister, onError );
@@ -296,7 +300,7 @@ $( document ).on( 'submit', '#forgot-form', function(e){
 	}	
 
 	var onError = function( err ){
-	 	Helper().log( err );
+		Helper().log( err );
 	}
 
 	$user().forgot( json ).then( onForgot, onError );
@@ -351,34 +355,34 @@ function $user(){
 	return {
 		login: function( payload ){
 			return $http().post({
-				url     : Routes().user+Routes().login,
+				url     : Routes().login,
 				payload : payload,
 			});
 		},
 
 		register: function( payload ){
 			return $http().post({
-				url     : Routes().user+Routes().register,
+				url     : Routes().register,
 				payload : payload,
 			});
 		},
 
 		forgot: function( payload ){
 			return $http().post({
-				url     : Routes().user+Routes().forgot,
+				url     : Routes().forgot,
 				payload : payload,
 			});
 		},
 
 		recover: function( payload ){
 			return $http().post({
-				url     : Routes().user+Routes().recover,
+				url     : Routes().recover,
 				payload : payload,
 			});
 		},
 		resendToken: function( payload ){
 			return $http().post({
-				url     : Routes().user+Routes().resendToken,
+				url     : Routes().resendToken,
 				payload : payload,
 			});
 		}
@@ -387,7 +391,7 @@ function $user(){
 function Config(){
 	return{
 		mode             : 'production',
-		apiUrl           : 'localhost/eWallet/server/',
+		apiUrl           : 'http://localhost/eWallet/server/',
 		cookieVar        : 'ewallet',
 		categoryIDCookie : 'categoryIDCookie',
 	}
@@ -415,14 +419,20 @@ function Helper(){
 function $http(){
 	return{
 		post: function( param ){
-			return $.post( Config().apiUrl + param.url, param.payload );
+			return $.ajax({
+			    type        : 'post',
+			    data        : param.payload,
+			    url         :  Config().apiUrl + param.url,
+			    dataType    : 'json',
+	  		});
 		},
 		delete: function( param ){
 			$.ajax({
 			    type    : 'delete',
-			    url     : Config().apiUrl + param.url+param.payload,
+			    url     : Config().apiUrl + param.url,
 			    success : function(response) {
-			        location.reload();
+			    	var category = $("#deleteCategory-"+param.id).closest('tr');
+			    	$(category).remove();
 			    },
 			    error   : function(response){
 			        alert('Error!');
@@ -432,14 +442,23 @@ function $http(){
 		put: function( param ){
 			$.ajax({
 			    type        : 'put',
-			    url         : Config().apiUrl + param.url+param.id,
 			    data        : JSON.stringify(param.title),
-			    contentType : 'application/json',
+			    url         : Config().apiUrl + param.url,
 			    dataType    : 'json',
 			    success     : function(response) {
-			    	$(".editView").hide();
-			    	$(".editDataView").hide();
-			        Finch.navigate(param.navigate);
+			    	var title = response.data.title;
+			    	$(".title-"+param.id).text(title);
+			    	$(".title-"+param.id).show();
+			    	$("#editCategoryField-"+param.id).hide();
+
+			    	var fieldName = response.data.field_name;
+			    	var des = response.data.description;
+			    	$(".fieldName-"+param.id).text(fieldName);
+			    	$(".description-"+param.id).text(des);
+			    	$(".fieldName-"+param.id).show();
+			    	$(".description-"+param.id).show();
+			    	$("#editTitleField-"+param.id).hide();
+			    	$("#editDataField-"+param.id).hide();
 			    },
 			    error: function(response){
 			        alert('Error!');
@@ -447,9 +466,15 @@ function $http(){
 		  	});
 		},
 		get: function( url , idRender , navigate ){
+				var cookie = JSON.parse(Helper().getCookie());
+				var token  = cookie.token;
 			$.ajax({
-				type    :'get',
-				url     : url,
+				method   : 'GET',
+				dataType : 'json',
+				headers  :  {
+						        "token":token,
+						    },
+				url      :  url,
 				success :function( response ){
 					$(".dashboard").hide();
 					var html = $("#"+idRender).html();
@@ -460,7 +485,7 @@ function $http(){
 					$('body').append(template({item: response}));
 				},
 				error : function( response ){
-					// alert('Error!');
+					alert('Error!');
 				}
 			});
 		},
@@ -468,42 +493,35 @@ function $http(){
 }
 function Routes(){
 	return{
-		category       :'category/',
+		category        :'category/',
 		addCategory    :'addCategory/',
-		deleteCategory :'deleteCategory/',
-		editCategory   :'editCategory/',
-		categoryEdit   :'editCategoryData/',
-		login          :'login',
-		user           :'user/',
-		register       :'register',
-		forgot         :'forgot',
-		dashboard      :'dashboard',
-		recover        :'recover',
-		resendToken    :'resendToken',
-		edit           :'edit',
-		categoryData   :'categoryData',
-		datas          :'data/',
-		addData        :'add',
-		deleteData     :'delete/',
-		show           :'show/',
+		login           :'login',
+		user            :'user/',
+		register        :'register',
+		forgot          :'forgot',
+		dashboard       :'dashboard',
+		recover         :'recover',
+		resendToken     :'resendToken',
+		edit            :'edit',
+		categoryData    :'categoryData/',
+		datas           :'data/',
+		first           :'/',
+		addCategoryData :'addCategoryData',
+		addCategoryData :'addCategoryData',
 		editData       :'editData',
-		showData       :'showEditData/',
-		first          :'/',
 	}
 }
 //<----------- dashboard -------------->
 Finch.route(Routes().addCategory,function(){
 	dashboard().renderAddCategory();
 });
-Finch.route(Routes().edit,function(){
-	dashboard().renderEdit();
-});
+
 Finch.route(Routes().categoryData,function(){
 	dashboard().rendercategoryData();
 });
 
-Finch.route(Routes().editData,function(){
-	dashboard().rendereditData();
+Finch.route(Routes().addCategoryData,function(){
+	dashboard().renderaddCategoryData();
 });
 //<----------- user -------------->
 Finch.route(Routes().login,function(){
@@ -536,13 +554,6 @@ $(document).on('click','.navigator',function(e){
 	Finch.call( route );
 });
 
-$(document).on('click','.edit',function(e){
-	e.preventDefault();
-	var route = $(this).data('route');
-	appendLocalStorage( 'category_id', $(this).data('id') );
-	Finch.call( route );
-});
-
 $(document).on('click','.categoryData',function(e){
 	e.preventDefault();
 	var route = $(this).data('route');
@@ -550,19 +561,11 @@ $(document).on('click','.categoryData',function(e){
 	Finch.call( route );
 });
 
-$(document).on('click','.editData',function(e){
-	e.preventDefault();
-	var route = $(this).data('route');
-	appendLocalStorage( 'editData_id', $(this).data('id') );
-	Finch.call( route );
-});
-
 function appendLocalStorage( storage_name, value ){
 	var cookie_arr       = {};
-	var cookie           = JSON.parse(Helper().getCookie());	
+	var cookie           = JSON.parse(Helper().getCookie());
 	cookie[storage_name] =  value;	
-	var json = JSON.stringify(cookie);
+	var json             = JSON.stringify(cookie);
 	Helper().setCookie(json);
 }
-
 })();

@@ -1,14 +1,20 @@
 function $http(){
 	return{
 		post: function( param ){
-			return $.post( Config().apiUrl + param.url, param.payload );
+			return $.ajax({
+			    type        : 'post',
+			    data        : param.payload,
+			    url         :  Config().apiUrl + param.url,
+			    dataType    : 'json',
+	  		});
 		},
 		delete: function( param ){
 			$.ajax({
 			    type    : 'delete',
-			    url     : Config().apiUrl + param.url+param.payload,
+			    url     : Config().apiUrl + param.url,
 			    success : function(response) {
-			        location.reload();
+			    	var category = $("#deleteCategory-"+param.id).closest('tr');
+			    	$(category).remove();
 			    },
 			    error   : function(response){
 			        alert('Error!');
@@ -18,14 +24,23 @@ function $http(){
 		put: function( param ){
 			$.ajax({
 			    type        : 'put',
-			    url         : Config().apiUrl + param.url+param.id,
 			    data        : JSON.stringify(param.title),
-			    contentType : 'application/json',
+			    url         : Config().apiUrl + param.url,
 			    dataType    : 'json',
 			    success     : function(response) {
-			    	$(".editView").hide();
-			    	$(".editDataView").hide();
-			        Finch.navigate(param.navigate);
+			    	var title = response.data.title;
+			    	$(".title-"+param.id).text(title);
+			    	$(".title-"+param.id).show();
+			    	$("#editCategoryField-"+param.id).hide();
+
+			    	var fieldName = response.data.field_name;
+			    	var des = response.data.description;
+			    	$(".fieldName-"+param.id).text(fieldName);
+			    	$(".description-"+param.id).text(des);
+			    	$(".fieldName-"+param.id).show();
+			    	$(".description-"+param.id).show();
+			    	$("#editTitleField-"+param.id).hide();
+			    	$("#editDataField-"+param.id).hide();
 			    },
 			    error: function(response){
 			        alert('Error!');
@@ -33,9 +48,15 @@ function $http(){
 		  	});
 		},
 		get: function( url , idRender , navigate ){
+				var cookie = JSON.parse(Helper().getCookie());
+				var token  = cookie.token;
 			$.ajax({
-				type    :'get',
-				url     : url,
+				method   : 'GET',
+				dataType : 'json',
+				headers  :  {
+						        "token":token,
+						    },
+				url      :  url,
 				success :function( response ){
 					$(".dashboard").hide();
 					var html = $("#"+idRender).html();
@@ -46,7 +67,7 @@ function $http(){
 					$('body').append(template({item: response}));
 				},
 				error : function( response ){
-					// alert('Error!');
+					alert('Error!');
 				}
 			});
 		},

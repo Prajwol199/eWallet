@@ -1,0 +1,38 @@
+.content h1{
+	font-family: 'Caveat Brush', cursive;
+	font-size: 50px;	
+}
+.content{
+	background-color: #6f5499;
+	height: 110px;
+	color: white;
+}
+.allTable{
+	background-color: white;
+	border-radius: 25px;
+}
+.categoryView h1{
+	font-family: 'Caveat Brush', cursive;
+	font-size: 30px;
+}
+footer{
+	background-color: #242729;
+    color: #bbc0c4;
+    height: 100px;
+    padding-top: 15px;
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+}
+
+footer p a{
+	color: #bbc0c4;
+	font-size:36px;
+}
+
+.small_content{
+	color: black;
+}
+.dashboard{
+	height: 2px;
+}

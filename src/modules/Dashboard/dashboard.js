@@ -7,19 +7,6 @@ function dashboard(){
 			$( ".dashboard" ).hide();
 			Helper().render( template );
 		},
-		renderEdit:function(){
-			var cookie = JSON.parse(Helper().getCookie());
-			var category_id = cookie.category_id;
-			if(category_id == null){
-				Finch.navigate('login');
-			}else{
-				$( "#hide" ).hide();
-				var url      = Config().apiUrl+Routes().category+Routes().categoryEdit+category_id;
-				var idRender = 'editView';
-				var navigate = 'edit';
-				$http().get( url , idRender ,navigate );
-			}
-		},
 		rendercategoryData:function(){
 			var cookie      = JSON.parse(Helper().getCookie());
 			var category_id = cookie.categoryData_id;
@@ -29,26 +16,20 @@ function dashboard(){
 				$( "#hide" ).hide();
 				$( ".editDataView" ).hide();
 				$( ".editCategoryDiv" ).hide();				
-				var url = Config().apiUrl+Routes().datas+Routes().show+category_id;
+				$( ".addDataView" ).hide();				
+				var url = Config().apiUrl+Routes().datas+category_id;
 				var idRender = 'categoryView';
 				var navigate = 'categoryData';
 				$http().get( url , idRender ,navigate );
 			}
 		},
-		rendereditData:function(){
-			var cookie = JSON.parse(Helper().getCookie());
-			var id = cookie.editData_id;
-			if(id == null){
-				Finch.navigate('categoryData');
-			}else{
-				$( "#hide" ).hide();
-				$(".categoryView").hide();
-				var url = Config().apiUrl+Routes().datas+Routes().showData+id;
-				var idRender = 'editDataView';
-				var navigate = 'editData';
-				$http().get( url , idRender ,navigate )
-			}
-		},
+		renderaddCategoryData: function(){
+			var template = $('#addDataView').html();
+			Finch.navigate('addCategoryData');
+			$( "#hide" ).hide();
+			$( ".categoryView" ).hide();
+			Helper().render( template );
+		}
 	}
 }
 //<-------------------- AddCategory form-------------------->
@@ -56,20 +37,19 @@ $( document ).on( 'submit', '#addCategory-form', function(e){
 	e.preventDefault();
 	var data = Helper().getCookie();
 	data = JSON.parse(data);
+	var user_id              = data.user_id;
 	var data_category        = {};
 	data_category['title']   = document.forms["addform"]["title"].value;
-	data_category['user_id'] = data.user_id;
 	var json = JSON.stringify(data_category);
 
 	var onAdd = function( response ){
 		Finch.navigate('dashboard');
-		location.reload();
 	}
 	
 	var onError = function( err ){
 	 	Helper().log( err );
 	}
-	$dashboard().addCategory( json ).then( onAdd, onError );
+	$dashboard().addCategory( json , user_id ).then( onAdd, onError );
 });
 
 //<----------- Delete Category---------------->
@@ -80,16 +60,6 @@ $(document).on('click','.delete',function(e){
 	$dashboard().deleteCategory( id );
 });
 
-//<---------------- Edit Category ---------------->
-$( document ).on( 'submit', '#editCategory-form', function(e){
-	e.preventDefault();
-	var cookie = JSON.parse(Helper().getCookie());
-	var id = cookie.category_id;
-	var data = {};
-	data['title'] = $("#title").val();
-
-	$dashboard().editCategory( id,data );
-});
 //<-------------------- Add Data form-------------------->
 $( document ).on( 'submit', '#addData', function(e){
 	e.preventDefault();
@@ -103,7 +73,7 @@ $( document ).on( 'submit', '#addData', function(e){
 
 	var onaddData = function( response ){
 		Finch.navigate('categoryData');
-		location.reload();
+		// location.reload();
 	}
 	
 	var onError = function( err ){
@@ -119,20 +89,54 @@ $(document).on('click','.deleteData',function(e){
 
 	$dashboard().deleteData( id );
 });
-//<---------------- Edit Data ---------------->
-$( document ).on( 'submit', '#editData', function(e){
-	e.preventDefault();
-	var cookie          = JSON.parse(Helper().getCookie());
-	var id              = cookie.editData_id;
-	var data            = {};
-	data['field_name']  = $("[name=fieldName]").val();
-	data['description'] = $("[name=description]").val();
 
-	$dashboard().editData( id,data );
-});
 //<---------------- Dashboard redirect ---------------->
 $(document).on('click','#dashboard',function(e){
 	e.preventDefault();
 	Finch.navigate('dashboard');
 	// location.reload();
+});
+
+//<---------------- Edit Data -------------------->
+//event on edit categoty click
+$(document).on('click','#btnEdit',function(e){
+	e.preventDefault();
+	var id = $(e.target).data('id');
+	$(".title-"+id).hide();
+	$("#editCategoryField-"+id).show();
+	$("#editTitle-"+id).focus();
+});
+
+//<------event on save categoty click --------->
+$(document).on('click','#btnSave',function(e){
+	e.preventDefault();
+	var id =  $(e.target).data('id');
+
+	var data = {};
+	data['title'] = $("[name=titleName-"+id+"]").val();
+
+	$dashboard().editCategory( id,data );
+});
+
+//<---------------- Edit Data -------------------->
+
+$(document).on('click','#btnEditData',function(e){
+	e.preventDefault();
+	var id = $(e.target).data('id');
+	$(".fieldName-"+id).hide();
+	$(".description-"+id).hide();
+	$("#editDataField-"+id).show();
+	$("#editTitleField-"+id).show();
+	$("#editFieldName-"+id).focus();
+});
+
+$(document).on('click','#btnSaveData',function(e){
+	e.preventDefault();
+	var id =  $(e.target).data('id');
+
+	var data = {};
+	data['field_name']  = $("[name=fieldName-"+id+"]").val();
+	data['description'] = $("[name=description-"+id+"]").val();
+
+	$dashboard().editData( id,data );
 });

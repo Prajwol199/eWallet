@@ -1,43 +1,41 @@
 function $dashboard(){
 	return {
-		addCategory: function( payload ){
+		addCategory: function( payload, user_id ){
 			return $http().post({
-				url     : Routes().category+Routes().addCategory,
+				url     : Routes().category+user_id,
 				payload : payload,
 			});
 		},
-		deleteCategory: function( payload ){
+		deleteCategory: function( id ){
 			return $http().delete({
-				url     : Routes().category+Routes().deleteCategory,
-				payload : payload,
+				url     : Routes().category+id,
+				id      : id,
 			});
 		},
 		editCategory: function( id,title ){
 			return $http().put({
-				url      : Routes().category+Routes().editCategory,
-				id       : id,
+				url      : Routes().category+id,
+				id       : id,    
 				title    : title,
-				navigate : 'dashboard',
 			});
 		},
 		addData: function( payload , id ){
 			return $http().post({
-				url     : Routes().datas+Routes().addData+'/'+id,
+				url     : Routes().datas+id,
 				payload : payload,
 			});
 		},
-		deleteData: function( payload ){
+		deleteData: function( id ){
 			return $http().delete({
-				url     : Routes().datas+Routes().deleteData,
-				payload : payload,
+				url     : Routes().datas+id,
+				id      : id,
 			});
 		},
 		editData: function( id, title ){
 			return $http().put({
-				url      : Routes().datas+Routes().edit+'/',
+				url      : Routes().datas+id,
 				id       : id,
 				title    : title,
-				navigate : 'categoryData',
 			});
 		},
 	}

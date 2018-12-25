@@ -2,7 +2,7 @@
 
 require_once('Wrapper.php');
 require_once('Database.php');
-require_once('mailer.php');
+require_once('Mailer.php');
 
 class User extends Wrapper{
 
@@ -10,38 +10,6 @@ class User extends Wrapper{
 
 	public function __construct(){
         $this->db = Database::instantiate();
-
-        $this->register_route( 'register', array(
-            'method'   => 'post',
-            'callback' => array( $this, 'register' )
-        ));
-
-        $this->register_route( 'login', array(
-            'method'   => 'post',
-            'callback' => array( $this, 'login' )
-        ));
-
-        $this->register_route( 'forgot', array(
-            'method'   => 'post',
-            'callback' => array( $this, 'forgot' )
-        ));
-
-        $this->register_route( 'recover', array(
-            'method'   => 'post',
-            'callback' => array( $this, 'recover' )
-        ));
-
-        $this->register_route( 'resendToken', array(
-            'method'   => 'post',
-            'callback' => array( $this, 'forgot' )
-        ));
-
-        $this->register_route( 'addCategory', array(
-            'method'   => 'post',
-            'callback' => array( $this, 'addCategory' )
-        ));
-
-        parent::__construct();
     }
 
     public function register(){
@@ -143,11 +111,11 @@ class User extends Wrapper{
                 $mail = new Mailer();
                 if($mail->send_mail($str,$email)){
                     $data = array(
-                    'email'   => $email,
-                    'token'   =>$str,
-                    'message' => 'Token send successfully'
+                        'email'   => $email,
+                        'token'   =>$str,
+                        'message' => 'Token send successfully'
                     );
-                $this->response(200,$data);
+                    $this->response(200,$data);
                 }
             }else{
                $this->response(200,array(
@@ -192,14 +160,6 @@ class User extends Wrapper{
         $base64    = base64_encode($signature);
         $token     = base64_encode($header).'.'.base64_encode($payload).'.'.$base64;
         return $token;
-    }
-
-    public function fetch($data){
-        $rows=[];
-        while($row=mysqli_fetch_assoc($data)){
-            $rows[]=$row;
-        }
-        return $rows;
     }
 }
 $test = new User();
